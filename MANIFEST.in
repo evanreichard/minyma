@@ -1,0 +1,2 @@
+recursive-include minyma/api *.py
+recursive-include minyma/templates *

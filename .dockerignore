@@ -1,0 +1,6 @@
+__pycache__
+.direnv
+data
+venv
+openai_key
+minyma.egg-info/

@@ -1,0 +1,7 @@
+__pycache__
+.DS_Store
+.direnv
+data
+venv
+openai_key
+minyma.egg-info/

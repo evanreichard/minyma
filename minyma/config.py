@@ -1,0 +1,23 @@
+import os
+
+
+def get_env(key, default=None, required=False) -> str:
+    """Wrapper for gathering env vars."""
+    if required:
+        assert key in os.environ, "Missing Environment Variable: %s" % key
+    return str(os.environ.get(key, default))
+
+
+class Config:
+    """Wrap application configurations
+
+    Attributes
+    ----------
+    DATA_PATH : str
+        The path where to store any resources (default: ./)
+    OPENAI_API_KEY : str
+        OpenAI API Key - Required
+    """
+
+    DATA_PATH: str = get_env("DATA_PATH", default="./data")
+    OPENAI_API_KEY: str = get_env("OPENAI_API_KEY", required=True)
