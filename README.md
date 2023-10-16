@@ -23,13 +23,12 @@ export OPENAI_API_KEY=`cat openai_key`
 minyma server run
 
 # Docker Quick Start
-make docker_build_local
 docker run \
     -p 5000:5000 \
     -e OPENAI_API_KEY=`cat openai_key` \
     -e DATA_PATH=/data \
     -v ./data:/data \
-    minyma:latest
+    gitea.va.reichard.io/evan/minyma:latest
 ```
 
 The server will now be accessible at `http://localhost:5000`
@@ -76,6 +75,9 @@ pip install -e .
 
 # Creds
 export OPENAI_API_KEY=`cat openai_key`
+
+# Docker
+make docker_build_local
 ```
 
 # Notes
