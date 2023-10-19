@@ -43,7 +43,11 @@ and the only supported normalizer is the `pubmed` normalizer.
 To normalize data, you can use Minyma's `normalize` CLI command:
 
 ```bash
-minyma normalize --filename ./pubmed_manuscripts.jsonl --normalizer pubmed --database chroma --datapath ./chroma
+minyma normalize \
+    --filename ./pubmed_manuscripts.jsonl \
+    --normalizer pubmed \
+    --database chroma \
+    --datapath ./chroma
 ```
 
 The above example does the following:

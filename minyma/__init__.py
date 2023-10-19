@@ -1,8 +1,8 @@
+from os import path
 import click
 import signal
 import sys
 from importlib.metadata import version
-from minyma.config import Config
 from minyma.oai import OpenAIConnector
 from minyma.vdb import ChromaDB
 from flask import Flask
@@ -15,14 +15,15 @@ def signal_handler(sig, frame):
 
 
 def create_app():
-    global oai, cdb
+    global oai, vdb
 
+    from minyma.config import Config
     import minyma.api.common as api_common
     import minyma.api.v1 as api_v1
 
     app = Flask(__name__)
-    cdb = ChromaDB(Config.DATA_PATH)
-    oai = OpenAIConnector(Config.OPENAI_API_KEY, cdb)
+    vdb = ChromaDB(path.join(Config.DATA_PATH, "chroma"))
+    oai = OpenAIConnector(Config.OPENAI_API_KEY, vdb)
 
     app.register_blueprint(api_common.bp)
     app.register_blueprint(api_v1.bp)

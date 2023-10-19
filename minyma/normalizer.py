@@ -1,12 +1,16 @@
 from io import TextIOWrapper
 import json
 
-class DataNormalizer:
+class DataNormalizer():
     def __init__(self, file: TextIOWrapper):
-        pass
+        self.file = file
+
+    def __len__(self) -> int:
+        return 0
 
     def __iter__(self):
-        pass
+        yield None
+
 
 class PubMedNormalizer(DataNormalizer):
     """
@@ -14,7 +18,14 @@ class PubMedNormalizer(DataNormalizer):
     normalized inside the iterator.
     """
     def __init__(self, file: TextIOWrapper):
-         self.file = file
+        self.file = file
+        self.length = 0
+
+    def __len__(self):
+        last_pos = self.file.tell()
+        self.length = sum(1 for _ in self.file)
+        self.file.seek(last_pos)
+        return self.length
 
     def __iter__(self):
         count = 0
@@ -42,4 +53,10 @@ class PubMedNormalizer(DataNormalizer):
             count += 1
 
             # ID = Line Number
-            yield { "doc": norm_text, "id": str(count - 1) }
+            yield {
+               "id": str(count - 1),
+               "doc": norm_text,
+               "metadata": {
+                   "file": l.get("file")
+               },
+           }
