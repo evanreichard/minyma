@@ -15,6 +15,8 @@
 
 AI Chat Bot with Vector / Embedding DB Context
 
+[![Build Status](https://drone.va.reichard.io/api/badges/evan/minyma/status.svg)](https://drone.va.reichard.io/evan/minyma)
+
 ## Running Server
 
 ```bash

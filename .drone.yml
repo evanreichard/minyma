@@ -1,0 +1,17 @@
+kind: pipeline
+type: kubernetes
+name: default
+
+steps:
+  # Publish Dev Docker Image
+  - name: publish_docker
+    image: plugins/docker
+    settings:
+      repo: gitea.va.reichard.io/evan/minyma
+      registry: gitea.va.reichard.io
+      tags:
+        - dev
+      username:
+        from_secret: docker_username
+      password:
+        from_secret: docker_password
