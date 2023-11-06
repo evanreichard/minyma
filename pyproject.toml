@@ -15,7 +15,8 @@ dependencies = [
   "tqdm",
   "chromadb",
   "sqlite-utils",
-  "click"
+  "click",
+  "beautifulsoup4"
 ]
 
 [project.scripts]
