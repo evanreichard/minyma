@@ -54,6 +54,11 @@ class OpenAIConnector:
         openai.api_key = api_key
 
     def query(self, question: str) -> Any:
+        # Track Usage
+        prompt_tokens = 0
+        completion_tokens = 0
+        total_tokens = 0
+
         # Get Available Functions
         functions = "\n".join(list(map(lambda x: "- %s" % x["def"], minyma.plugins.plugin_defs().values())))
 
@@ -82,9 +87,14 @@ class OpenAIConnector:
             )
         )
 
+        # Update Usage
+        prompt_tokens += response.usage.get("prompt_tokens", 0)
+        completion_tokens += response.usage.get("completion_tokens", 0)
+        total_tokens += response.usage.get("prompt_tokens", 0)
+
         print("[OpenAIConnector] Completed Initial OAI Query:\n", indent(json.dumps({ "usage": response.usage, "function_calls": all_funcs }, indent=2), ' ' * 2))
 
-        # Execute Functions
+        # Execute Requested Functions
         func_responses = {}
         for func in all_funcs:
             func_responses[func] = minyma.plugins.execute(func)
@@ -107,10 +117,26 @@ class OpenAIConnector:
           messages=messages
         )
 
+        # Update Usage
+        prompt_tokens += response.usage.get("prompt_tokens", 0)
+        completion_tokens += response.usage.get("completion_tokens", 0)
+        total_tokens += response.usage.get("prompt_tokens", 0)
+
         print("[OpenAIConnector] Completed Follup Up OAI Query:\n", indent(json.dumps({ "usage": response.usage }, indent=2), ' ' * 2))
 
+        # Get Content
+        content = response.choices[0]["message"]["content"]
+
         # Return Response
-        return { "llm": response }
+        return {
+            "response": content,
+            "functions": func_responses,
+            "usage": {
+                "prompt_tokens": prompt_tokens,
+                "completion_tokens": completion_tokens,
+                "total_tokens": total_tokens
+            }
+        }
 
     def old_query(self, question: str) -> Any:
         # Get related documents from vector db

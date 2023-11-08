@@ -13,15 +13,56 @@
 
 ---
 
-AI Chat Bot with Vector / Embedding DB Context
+AI Chat Bot with Plugins (Home Assistant, Vehicle Lookup, DuckDuckGo Search)
 
 [![Build Status](https://drone.va.reichard.io/api/badges/evan/minyma/status.svg)](https://drone.va.reichard.io/evan/minyma)
+
+## Plugins
+
+### Vehicle Lookup API
+
+This utilizes Carvana's undocumented API to lookup details on a vehicle.
+
+```
+User:      What vehicle is NY plate HELLO?
+Assistant: The vehicle corresponding to NY plate HELLO is a 2016 MAZDA CX-5
+           Grand Touring Sport Utility 4D with VIN JM3KE4DY6G0672552.
+```
+
+### Home Assistant API
+
+This utilizes Home Assistants [Conversational API](https://developers.home-assistant.io/docs/intent_conversation_api/).
+
+```
+User:      Turn off the living room lights
+Assistant: The living room lights have been turned off. Is there anything else I can assist you with?
+
+User:      Turn on the living room lights
+Assistant: The living room lights have been turned on successfully.
+```
+
+### DuckDuckGo
+
+This utilizes DuckDuckGo Search by scraping the top 5 results.
+
+```
+User:      Tell me about Evan Reichard
+Assistant: Evan Reichard is a Principal Detection and Response Engineer based
+           in the Washington DC-Baltimore Area. He has been in this role since
+           August 2022. Evan has created a browser extension that helps SOC
+           analysts and saves them over 300 hours per month. Additionally,
+           there are three professionals named Evan Reichard on LinkedIn and
+           there are also profiles of people named Evan Reichard on Facebook.
+```
 
 ## Running Server
 
 ```bash
 # Locally (See "Development" Section)
 export OPENAI_API_KEY=`cat openai_key`
+export HOME_ASSISTANT_API_KEY=`cat ha_key`
+export HOME_ASSISTANT_URL=https://some-url.com
+
 minyma server run
 
 # Docker Quick Start

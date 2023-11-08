@@ -25,7 +25,7 @@ def create_app():
     app = Flask(__name__)
     vdb = ChromaDB(path.join(Config.DATA_PATH, "chroma"))
     oai = OpenAIConnector(Config.OPENAI_API_KEY, vdb)
-    plugins = PluginLoader()
+    plugins = PluginLoader(Config)
 
     app.register_blueprint(api_common.bp)
     app.register_blueprint(api_v1.bp)

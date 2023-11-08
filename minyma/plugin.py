@@ -7,7 +7,8 @@ class MinymaPlugin:
     pass
 
 class PluginLoader:
-    def __init__(self):
+    def __init__(self, config):
+        self.config = config
         self.plugins = self.get_plugins()
         self.definitions = self.plugin_defs()
 
@@ -52,38 +53,6 @@ class PluginLoader:
 
         return defs
 
-    def derive_function_definitions(self):
-        """Dynamically generate function definitions"""
-        function_definitions = []
-
-        for plugin in self.plugins:
-            plugin_name = plugin.name
-
-            for method_obj in plugin.functions:
-                method_name = method_obj.__name__
-                signature = inspect.signature(method_obj)
-                parameters = list(signature.parameters.values())
-
-                # Extract Parameter Information
-                params_info = {}
-                for param in parameters:
-                    param_name = param.name
-                    param_type = param.annotation
-                    params_info[param_name] = {"type": TYPE_DEFS[param_type]}
-
-                # Store Function Information
-                method_info = {
-                    "name": "%s_%s" %(plugin_name, method_name),
-                    "description": inspect.getdoc(method_obj),
-                    "parameters": {
-                        "type": "object",
-                        "properties": params_info
-                    }
-                }
-                function_definitions.append(method_info)
-
-        return function_definitions
-
 
     def get_plugins(self):
         """Dynamically load plugins"""
@@ -120,5 +89,7 @@ class PluginLoader:
         # Instantiate Plugins
         plugins = []
         for cls in plugin_classes:
-            plugins.append(cls())
+            instance = cls(self.config)
+            print("[PluginLoader] %s - Loaded: %d Feature(s)" % (cls.__name__, len(instance.functions)))
+            plugins.append(instance)
         return plugins

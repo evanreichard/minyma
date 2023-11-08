@@ -11,7 +11,8 @@ HEADERS = {
 class VehicleLookupPlugin(MinymaPlugin):
     """Search Vehicle Information"""
 
-    def __init__(self):
+    def __init__(self, config):
+        self.config = config
         self.name = "vehicle_state_plate"
         self.functions = [self.lookup]
 
@@ -49,13 +50,12 @@ class VehicleLookupPlugin(MinymaPlugin):
 
         # Invalid JSON
         if json_resp is None:
-            return {
+            return json.dumps({
                 "error": error,
                 "response": text_resp,
-            }
+            })
 
         try:
-
             # Check Result
             status_resp = json_resp.get("status", "Unknown")
             if status_resp != "Succeeded":
@@ -74,10 +74,10 @@ class VehicleLookupPlugin(MinymaPlugin):
             trim = vehicle_info.get("vehicles")[0].get("trim")
 
         except Exception as e:
-            return {
+            return json.dumps({
                 "error": "Unknown Error: %s" % e,
                 "response": text_resp,
-            }
+            })
 
         return json.dumps({
             "result": {

@@ -11,7 +11,8 @@ HEADERS = {
 class DuckDuckGoPlugin(MinymaPlugin):
     """Search DuckDuckGo"""
 
-    def __init__(self):
+    def __init__(self, config):
+        self.config = config
         self.name = "duck_duck_go"
         self.functions = [self.search]
 

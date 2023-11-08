@@ -20,24 +20,20 @@ def get_response():
     resp = minyma.oai.query(message)
 
     # Derive LLM Data
-    llm_resp = resp.get("llm", {})
-    llm_choices = llm_resp.get("choices", [])
+    # llm_resp = resp.get("llm", {})
+    # llm_choices = llm_resp.get("choices", [])
 
     # Derive VDB Data
-    vdb_resp = resp.get("vdb", {})
-    combined_context  = [{
-            "id": vdb_resp.get("ids")[i],
-            "distance": vdb_resp.get("distances")[i],
-            "doc": vdb_resp.get("docs")[i],
-            "metadata": vdb_resp.get("metadatas")[i],
-    } for i, _ in enumerate(vdb_resp.get("docs", []))]
+    # vdb_resp = resp.get("vdb", {})
+    # combined_context  = [{
+    #         "id": vdb_resp.get("ids")[i],
+    #         "distance": vdb_resp.get("distances")[i],
+    #         "doc": vdb_resp.get("docs")[i],
+    #         "metadata": vdb_resp.get("metadatas")[i],
+    # } for i, _ in enumerate(vdb_resp.get("docs", []))]
 
     # Return Data
-    return {
-        "response": None if len(llm_choices) == 0 else llm_choices[0].get("message", {}).get("content"),
-        "context": combined_context,
-        "usage": llm_resp.get("usage"),
-    }
+    return resp
 
 
 

@@ -21,3 +21,5 @@ class Config:
 
     DATA_PATH: str = get_env("DATA_PATH", default="./data")
     OPENAI_API_KEY: str = get_env("OPENAI_API_KEY", required=True)
+    HOME_ASSISTANT_API_KEY: str = get_env("HOME_ASSISTANT_API_KEY", required=False)
+    HOME_ASSISTANT_URL: str = get_env("HOME_ASSISTANT_URL", required=False)
