@@ -19,7 +19,7 @@ class Config:
         OpenAI API Key - Required
     """
 
-    DATA_PATH: str = get_env("DATA_PATH", default="./data")
-    OPENAI_API_KEY: str = get_env("OPENAI_API_KEY", required=True)
+    CHROMA_DATA_PATH: str = get_env("CHROMA_DATA_PATH", required=False)
     HOME_ASSISTANT_API_KEY: str = get_env("HOME_ASSISTANT_API_KEY", required=False)
     HOME_ASSISTANT_URL: str = get_env("HOME_ASSISTANT_URL", required=False)
+    OPENAI_API_KEY: str = get_env("OPENAI_API_KEY", required=True)

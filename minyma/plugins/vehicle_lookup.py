@@ -14,7 +14,7 @@ class VehicleLookupPlugin(MinymaPlugin):
     def __init__(self, config):
         self.config = config
         self.name = "vehicle_state_plate"
-        self.functions = [self.lookup]
+        self.functions = [self.lookup_vehicle_by_state_plate]
 
     def __query_api(self, url, json=None, headers=None):
         # Perform Request
@@ -39,7 +39,7 @@ class VehicleLookupPlugin(MinymaPlugin):
             return None, text, error
 
 
-    def lookup(self, state_abbreviation: str, licence_plate: str):
+    def lookup_vehicle_by_state_plate(self, state_abbreviation: str, licence_plate: str):
         CARVANA_URL = (
             "https://apim.carvana.io/trades/api/v5/vehicleconfiguration/plateLookup/%s/%s"
             % (state_abbreviation, licence_plate)

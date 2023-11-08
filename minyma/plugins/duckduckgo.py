@@ -14,9 +14,9 @@ class DuckDuckGoPlugin(MinymaPlugin):
     def __init__(self, config):
         self.config = config
         self.name = "duck_duck_go"
-        self.functions = [self.search]
+        self.functions = [self.duck_duck_go_search]
 
-    def search(self, query: str):
+    def duck_duck_go_search(self, query: str):
         """Search DuckDuckGo"""
         resp = requests.get("https://html.duckduckgo.com/html/?q=%s" % query, headers=HEADERS)
         soup = BeautifulSoup(resp.text, features="html.parser")

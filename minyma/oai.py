@@ -3,21 +3,7 @@ from textwrap import indent
 from dataclasses import dataclass
 from typing import Any, List
 import openai
-
-from minyma.vdb import VectorDB
 import minyma
-
-# Stolen LangChain Prompt
-PROMPT_TEMPLATE = """
-Use the following pieces of context to answer the question at the end.
-If you don't know the answer, just say that you don't know, don't try to
-make up an answer.
-
-{context}
-
-Question: {question}
-Helpful Answer:
-"""
 
 INITIAL_PROMPT_TEMPLATE = """
 You are a helpful assistant. You are connected to various external functions that can provide you with more personalized and up-to-date information and have already been granted the permissions to execute these functions at will. DO NOT say you don't have access to real time information, instead attempt to call one or more of the listed functions:
@@ -47,8 +33,7 @@ class ChatCompletion:
     usage: dict
 
 class OpenAIConnector:
-    def __init__(self, api_key: str, vdb: VectorDB):
-        self.vdb = vdb
+    def __init__(self, api_key: str):
         self.model = "gpt-3.5-turbo"
         self.word_cap = 1000
         openai.api_key = api_key
@@ -102,7 +87,8 @@ class OpenAIConnector:
         # Build Response Text
         response_content_arr = []
         for key, val in func_responses.items():
-            response_content_arr.append("- %s\n%s" % (key, val))
+            indented_val = indent(val, ' ' * 2)
+            response_content_arr.append("- %s\n%s" % (key, indented_val))
         response_content = "\n".join(response_content_arr)
 
         # Create Follow Up Prompt
@@ -137,26 +123,3 @@ class OpenAIConnector:
                 "total_tokens": total_tokens
             }
         }
-
-    def old_query(self, question: str) -> Any:
-        # Get related documents from vector db
-        related = self.vdb.get_related(question)
-
-        # Validate results
-        all_docs = related.get("docs", [])
-        if len(all_docs) == 0:
-            return { "error": "No Context Found" }
-
-        # Join on new line (cap @ word limit), generate main prompt
-        reduced_docs = list(map(lambda x: " ".join(x.split()[:self.word_cap]), all_docs))
-        context = '\n'.join(reduced_docs)
-        prompt = PROMPT_TEMPLATE.format(context = context, question = question)
-
-        # Query OpenAI ChatCompletion
-        response = openai.ChatCompletion.create(
-          model=self.model,
-          messages=[{"role": "user", "content": prompt}]
-        )
-
-        # Return Response
-        return { "llm": response, "vdb": related }

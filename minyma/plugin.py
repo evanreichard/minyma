@@ -38,7 +38,6 @@ class PluginLoader:
 
             for func_obj in plugin.functions:
                 func_name = func_obj.__name__
-                function_name = "%s_%s" % (plugin_name, func_name)
 
                 signature = inspect.signature(func_obj)
                 params = list(
@@ -48,8 +47,12 @@ class PluginLoader:
                     )
                 )
 
-                func_def = "%s(%s)" % (function_name, ", ".join(params))
-                defs[function_name] = { "func": func_obj, "def": func_def }
+                if func_name in defs:
+                    print("[PluginLoader] Error: Duplicate Function: (%s) %s" % (plugin_name, func_name))
+                    continue
+
+                func_def = "%s(%s)" % (func_name, ", ".join(params))
+                defs[func_name] = { "func": func_obj, "def": func_def }
 
         return defs
 

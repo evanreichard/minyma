@@ -2,6 +2,7 @@ __pycache__
 .DS_Store
 .direnv
 data
+datasets
 venv
 openai_key
 ha_key

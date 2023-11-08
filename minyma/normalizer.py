@@ -18,6 +18,7 @@ class PubMedNormalizer(DataNormalizer):
     normalized inside the iterator.
     """
     def __init__(self, file: TextIOWrapper):
+        self.name = "pubmed"
         self.file = file
         self.length = 0
 

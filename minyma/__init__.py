@@ -16,15 +16,14 @@ def signal_handler(sig, frame):
 
 
 def create_app():
-    global oai, vdb, plugins
+    global oai, plugins
 
     from minyma.config import Config
     import minyma.api.common as api_common
     import minyma.api.v1 as api_v1
 
     app = Flask(__name__)
-    vdb = ChromaDB(path.join(Config.DATA_PATH, "chroma"))
-    oai = OpenAIConnector(Config.OPENAI_API_KEY, vdb)
+    oai = OpenAIConnector(Config.OPENAI_API_KEY)
     plugins = PluginLoader(Config)
 
     app.register_blueprint(api_common.bp)
@@ -70,7 +69,7 @@ def normalize(filename, normalizer, database, datapath):
         return print("INVALID NORMALIZER:", normalizer)
 
     # Process Data
-    vdb.load_documents(norm)
+    vdb.load_documents(norm.name, norm)
 
 
 signal.signal(signal.SIGINT, signal_handler)

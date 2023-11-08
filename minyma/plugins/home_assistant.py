@@ -9,7 +9,7 @@ class HomeAssistantPlugin(MinymaPlugin):
 
     def __init__(self, config):
         self.config = config
-        self.name = "home_automation"
+        self.name = "home_assistant"
 
 
         if not config.HOME_ASSISTANT_API_KEY or not config.HOME_ASSISTANT_URL:
@@ -20,9 +20,9 @@ class HomeAssistantPlugin(MinymaPlugin):
 
             self.functions = []
         else:
-            self.functions = [self.command]
+            self.functions = [self.home_automation_command]
 
-    def command(self, natural_language_command: str):
+    def home_automation_command(self, natural_language_command: str):
         url = urllib.parse.urljoin(self.config.HOME_ASSISTANT_URL, "/api/conversation/process")
         headers = {
             "Authorization": "Bearer %s" % self.config.HOME_ASSISTANT_API_KEY,
