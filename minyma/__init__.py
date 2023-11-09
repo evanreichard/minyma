@@ -3,6 +3,7 @@ import click
 import signal
 import sys
 from importlib.metadata import version
+from minyma.plugin import PluginLoader
 from minyma.oai import OpenAIConnector
 from minyma.vdb import ChromaDB
 from flask import Flask
@@ -15,15 +16,15 @@ def signal_handler(sig, frame):
 
 
 def create_app():
-    global oai, vdb
+    global oai, plugins
 
     from minyma.config import Config
     import minyma.api.common as api_common
     import minyma.api.v1 as api_v1
 
     app = Flask(__name__)
-    vdb = ChromaDB(path.join(Config.DATA_PATH, "chroma"))
-    oai = OpenAIConnector(Config.OPENAI_API_KEY, vdb)
+    oai = OpenAIConnector(Config.OPENAI_API_KEY)
+    plugins = PluginLoader(Config)
 
     app.register_blueprint(api_common.bp)
     app.register_blueprint(api_v1.bp)
@@ -68,7 +69,7 @@ def normalize(filename, normalizer, database, datapath):
         return print("INVALID NORMALIZER:", normalizer)
 
     # Process Data
-    vdb.load_documents(norm)
+    vdb.load_documents(norm.name, norm)
 
 
 signal.signal(signal.SIGINT, signal_handler)

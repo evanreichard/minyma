@@ -163,7 +163,8 @@
             let responseEl = document.createElement("p");
             responseEl.setAttribute(
               "class",
-              "whitespace-break-spaces border-b pb-3 mb-3"
+              "whitespace-break-spaces"
+              // "whitespace-break-spaces border-b pb-3 mb-3"
             );
             responseEl.innerText = data.response;
 
@@ -174,6 +175,7 @@
 	      <ul class="list-disc ml-6"></ul>`;
             let ulEl = contextEl.querySelector("ul");
 
+            /*
             // Create Context Links
             data.context
 
@@ -209,12 +211,13 @@
                 newEl.append(linkEl);
                 ulEl.append(newEl);
               });
+	    */
 
             // Add to DOM
             content.setAttribute("class", "w-full");
             content.innerHTML = "";
             content.append(responseEl);
-            content.append(contextEl);
+            // content.append(contextEl);
           })
           .catch((e) => {
             console.log("ERROR:", e);

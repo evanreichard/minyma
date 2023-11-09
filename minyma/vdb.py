@@ -18,11 +18,11 @@ def chunk(iterable, chunk_size: int):
 VectorDB Interface
 """
 class VectorDB:
-    def load_documents(self, normalizer: DataNormalizer):
-        pass
+    def load_documents(self, name: str, normalizer: DataNormalizer, chunk_size: int = 10):
+        raise NotImplementedError("VectorDB must implement load_documents")
 
-    def get_related(self, question: str) -> Any:
-        pass
+    def get_related(self, name: str, question: str) -> Any:
+        raise NotImplementedError("VectorDB must implement get_related")
 
 """
 ChromaDV VectorDB Type
@@ -31,12 +31,13 @@ class ChromaDB(VectorDB):
     def __init__(self, path: str):
         self.client: API = chromadb.PersistentClient(path=path)
         self.word_cap = 2500
-        self.collection_name: str = "vdb"
-        self.collection: chromadb.Collection = self.client.create_collection(name=self.collection_name, get_or_create=True)
 
-    def get_related(self, question: str) -> Any:
+    def get_related(self, name: str, question: str) -> Any:
+        # Get or Create Collection
+        collection = chromadb.Collection = self.client.create_collection(name=name, get_or_create=True)
+
         """Returns line separated related docs"""
-        results = self.collection.query(
+        results = collection.query(
             query_texts=[question.lower()],
             n_results=2
         )
@@ -53,7 +54,11 @@ class ChromaDB(VectorDB):
             "ids": all_ids
         }
 
-    def load_documents(self, normalizer: DataNormalizer, chunk_size: int = 10):
+    def load_documents(self, name: str, normalizer: DataNormalizer, chunk_size: int = 10):
+        # Get or Create Collection
+        collection = chromadb.Collection = self.client.create_collection(name=name, get_or_create=True)
+
+        # Load Items
         length = len(normalizer) / chunk_size
         for items in tqdm(chunk(normalizer, chunk_size), total=length):
             ids = []
@@ -65,7 +70,7 @@ class ChromaDB(VectorDB):
                 ids.append(item.get("id"))
                 metadatas.append(item.get("metadata", {}))
 
-            self.collection.add(
+            collection.add(
                 ids=ids,
                 documents=documents,
                 metadatas=metadatas,

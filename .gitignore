@@ -2,6 +2,9 @@ __pycache__
 .DS_Store
 .direnv
 data
+datasets
 venv
 openai_key
+ha_key
 minyma.egg-info/
+NOTES.md
