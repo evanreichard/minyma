@@ -50,10 +50,11 @@ class VehicleLookupPlugin(MinymaPlugin):
 
         # Invalid JSON
         if json_resp is None:
-            return json.dumps({
+            return{
+                "content": None,
+                "metadata": text_resp,
                 "error": error,
-                "response": text_resp,
-            })
+            }
 
         try:
             # Check Result
@@ -63,7 +64,11 @@ class VehicleLookupPlugin(MinymaPlugin):
                     error = "No Results"
                 else:
                     error = "API Error: %s" % status_resp
-                return {"error": error, "response": text_resp}
+                return {
+                    "content": None,
+                    "metadata": json_resp,
+                    "error": error,
+                }
 
             # Parse Result
             vehicle_info = json_resp.get("content")
@@ -74,17 +79,20 @@ class VehicleLookupPlugin(MinymaPlugin):
             trim = vehicle_info.get("vehicles")[0].get("trim")
 
         except Exception as e:
-            return json.dumps({
+            return {
+                "content": None,
+                "metadata": text_resp,
                 "error": "Unknown Error: %s" % e,
-                "response": text_resp,
-            })
+            }
 
-        return json.dumps({
-            "result": {
+        return {
+            "content": json.dumps({
                 "vin": vin,
                 "year": year,
                 "make": make,
                 "model": model,
                 "trim": trim,
-            },
-        })
+            }),
+            "metadata": json_resp,
+            "error": None
+        }

@@ -21,6 +21,7 @@ class DuckDuckGoPlugin(MinymaPlugin):
         resp = requests.get("https://html.duckduckgo.com/html/?q=%s" % query, headers=HEADERS)
         soup = BeautifulSoup(resp.text, features="html.parser")
 
+        # Get Results
         results = []
         for item in soup.select(".result > div"):
             title_el = item.select_one(".result__title > a")
@@ -31,4 +32,18 @@ class DuckDuckGoPlugin(MinymaPlugin):
 
             results.append({"title": title, "description": description})
 
-        return json.dumps(results[:5])
+        # Derive Metadata (Title)
+        metadata = {
+            "titles": list(
+                map(
+                    lambda x: x.get("title"),
+                    results[:5]
+                )
+            )
+        }
+
+        return {
+            "content": json.dumps(results[:5]),
+            "metadata": metadata,
+            "error": None
+        }

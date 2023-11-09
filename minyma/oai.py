@@ -79,20 +79,33 @@ class OpenAIConnector:
 
         print("[OpenAIConnector] Completed Initial OAI Query:\n", indent(json.dumps({ "usage": response.usage, "function_calls": all_funcs }, indent=2), ' ' * 2))
 
-        # Execute Requested Functions
-        func_responses = {}
-        for func in all_funcs:
-            func_responses[func] = minyma.plugins.execute(func)
+        # Build Response Text & Metadata
+        func_metadata = {}
+        func_response = []
 
-        # Build Response Text
-        response_content_arr = []
-        for key, val in func_responses.items():
-            indented_val = indent(val, ' ' * 2)
-            response_content_arr.append("- %s\n%s" % (key, indented_val))
-        response_content = "\n".join(response_content_arr)
+        for func in all_funcs:
+            # Execute Requested Function
+            resp = minyma.plugins.execute(func)
+
+            # Unknown Response
+            if resp is None:
+                print("[OpenAIConnector] Invalid Function Response: %s" % func)
+                continue
+
+            # Get Response
+            content = resp.get("content")
+            metadata = resp.get("metadata")
+            error = resp.get("error")
+
+            # Append Responses & Metadata
+            indented_val = indent(content or error or "Unknown Error", ' ' * 2)
+            func_response.append("- %s\n%s" % (func, indented_val))
+            func_metadata[func] = { "metadata": metadata, "error": error }
+
+        func_response = "\n".join(func_response)
 
         # Create Follow Up Prompt
-        prompt = FOLLOW_UP_PROMPT_TEMPLATE.format(question = question, response = response_content)
+        prompt = FOLLOW_UP_PROMPT_TEMPLATE.format(question = question, response = func_response)
         messages = [{"role": "user", "content": prompt}]
 
         print("[OpenAIConnector] Running Follup Up OAI Query")
@@ -116,7 +129,7 @@ class OpenAIConnector:
         # Return Response
         return {
             "response": content,
-            "functions": func_responses,
+            "functions": func_metadata,
             "usage": {
                 "prompt_tokens": prompt_tokens,
                 "completion_tokens": completion_tokens,
