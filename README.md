@@ -13,7 +13,7 @@
 
 ---
 
-AI Chat Bot with Plugins (RAG VectorDB - ChromaDB, DuckDuckGo Search, Home Assistant, Vehicle Lookup)
+AI Chat Bot with Plugins (RAG VectorDB - ChromaDB, DuckDuckGo Search, Home Assistant, Vehicle Lookup, YouTube)
 
 [![Build Status](https://drone.va.reichard.io/api/badges/evan/minyma/status.svg)](https://drone.va.reichard.io/evan/minyma)
 
@@ -36,6 +36,20 @@ Assistant: Some common symptoms of COVID-19 mentioned in the context are
 **NOTE:** Instructions on how to load this with your own information are in the
 "Normalizing & Loading Data" section. We include a PubMed data normalizer as an
 example.
+
+### YouTube
+
+This utilizes `yt-dlp` to download a videos subtitles. Ask questions about YouTube videos!
+
+```
+User:      Tell me about this youtube video: https://www.youtube.com/watch?v=ZWgr7qP6yhY
+Assistant: The YouTube video you provided is a review of the new MacBook Pro by
+           Apple. The host discusses the laptop's features, including its new
+           color and chip. They mention that the laptop still retains its ports,
+           HDMI, and high-quality display, but also notes some shortcomings like
+           the notch and lack of face unlock. The host shares their impressions
+           of the new black color [...]
+```
 
 ### DuckDuckGo
 

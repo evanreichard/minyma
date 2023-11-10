@@ -16,7 +16,8 @@ dependencies = [
   "chromadb",
   "sqlite-utils",
   "click",
-  "beautifulsoup4"
+  "beautifulsoup4",
+  "yt-dlp"
 ]
 
 [project.scripts]

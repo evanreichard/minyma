@@ -1,18 +1,20 @@
-import json
-from textwrap import indent
 from dataclasses import dataclass
+from textwrap import indent
 from typing import Any, List
-import openai
+import json
 import minyma
+import openai
 
 INITIAL_PROMPT_TEMPLATE = """
-You are a helpful assistant. You are connected to various external functions that can provide you with more personalized and up-to-date information and have already been granted the permissions to execute these functions at will. DO NOT say you don't have access to real time information, instead attempt to call one or more of the listed functions:
+You are connected to various functions that can be used to answer the users questions. Your options are only "functions". Functions should be an array of strings containing the desired function calls (e.g. "function_name()").
+
+Available Functions:
 
 {functions}
 
-The user will not see your response. You must only respond with a comma separated list of function calls: "FUNCTION_CALLS: function(), function(), etc". It must be prepended by "FUNCTION_CALLS:".
+You must respond in JSON only with no other fluff or bad things will happen. The JSON keys must ONLY be "functions". Be sure to call the functions with the right arguments.
 
-User Message: {question}
+User Message: {message}
 """
 
 FOLLOW_UP_PROMPT_TEMPLATE = """
@@ -20,7 +22,7 @@ You are a helpful assistant. This is a follow up message to provide you with mor
 
 {response}
 
-User Message: {question}
+User Message: {message}
 """
 
 @dataclass
@@ -32,13 +34,15 @@ class ChatCompletion:
     choices: List[dict]
     usage: dict
 
+
 class OpenAIConnector:
     def __init__(self, api_key: str):
         self.model = "gpt-3.5-turbo"
         self.word_cap = 1000
         openai.api_key = api_key
 
-    def query(self, question: str) -> Any:
+
+    def query(self, message: str) -> Any:
         # Track Usage
         prompt_tokens = 0
         completion_tokens = 0
@@ -48,7 +52,7 @@ class OpenAIConnector:
         functions = "\n".join(list(map(lambda x: "- %s" % x["def"], minyma.plugins.plugin_defs().values())))
 
         # Create Initial Prompt
-        prompt = INITIAL_PROMPT_TEMPLATE.format(question = question, functions = functions)
+        prompt = INITIAL_PROMPT_TEMPLATE.format(message = message, functions = indent(functions, ' ' * 2))
         messages = [{"role": "user", "content": prompt}]
 
         print("[OpenAIConnector] Running Initial OAI Query")
@@ -63,14 +67,7 @@ class OpenAIConnector:
             print("[OpenAIConnector] No Results -> TODO", response)
 
         content = response.choices[0]["message"]["content"]
-
-        # Get Called Functions (TODO - Better Validation -> Failback Prompt?)
-        all_funcs = list(
-            map(
-                lambda x: x.strip() if x.endswith(")") else x.strip() + ")",
-                content.split("FUNCTION_CALLS:")[1].strip().split("),")
-            )
-        )
+        all_funcs = json.loads(content).get("functions")
 
         # Update Usage
         prompt_tokens += response.usage.get("prompt_tokens", 0)
@@ -105,7 +102,7 @@ class OpenAIConnector:
         func_response = "\n".join(func_response)
 
         # Create Follow Up Prompt
-        prompt = FOLLOW_UP_PROMPT_TEMPLATE.format(question = question, response = func_response)
+        prompt = FOLLOW_UP_PROMPT_TEMPLATE.format(message = message, response = func_response)
         messages = [{"role": "user", "content": prompt}]
 
         print("[OpenAIConnector] Running Follup Up OAI Query")
